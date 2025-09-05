@@ -12,8 +12,17 @@ enum PatternType {
 
 export class RandomDecimalGenerator extends NumberPatternGenerator {
     generate(digitCount: number): string {
-        const intDigits = Math.floor(digitCount / 2);
-        const decDigits = digitCount - intDigits;
+        let intDigits = Math.floor(digitCount / 2);
+        let decDigits = digitCount - intDigits;
+        // Ensure at least 1 digit in both integer and decimal part
+        if (intDigits < 1) {
+            intDigits = 1;
+            decDigits = Math.max(1, digitCount - intDigits);
+        }
+        if (decDigits < 1) {
+            decDigits = 1;
+            intDigits = Math.max(1, digitCount - decDigits);
+        }
         const patternType = Math.floor(Math.random() * 4) as PatternType;
         let result: PatternResult;
         switch (patternType) {
