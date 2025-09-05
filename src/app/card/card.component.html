@@ -1,0 +1,8 @@
+<div #cardNumber class="card-number" [class.blink]="blink"
+  [ngStyle]="{ 'font-size': fontSize }">
+  <ng-container *ngFor="let digit of digits; let i = index">
+    <span
+      [ngStyle]="{ opacity: showDigits[i] ? 1 : 0, transition: 'opacity 0.5s' }"
+    >{{ digit }}</span>
+  </ng-container>
+</div>

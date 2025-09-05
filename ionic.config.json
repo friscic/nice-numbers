@@ -1,0 +1,7 @@
+{
+  "name": "nice-numbers-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

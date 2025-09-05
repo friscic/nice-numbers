@@ -1,0 +1,15 @@
+.card-number {
+  font-size: 200px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.card-number.blink {
+  animation: blink 0.4s linear;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}

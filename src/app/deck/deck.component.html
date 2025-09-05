@@ -1,0 +1,169 @@
+<div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="margin-bottom: 12px; font-weight: bold; font-size: 1.2em;">
+        <div style="font-size: 0.85em;">
+            <button (click)="toggleShowPatterns()"
+                style="font-size: 1.5em; margin-bottom: 4px; background: none; border: none; cursor: pointer;">
+                <span style="display: inline-block; width: 24px; height: 24px;">
+                    <ng-container *ngIf="!showPatterns">
+                        <span [style.background]="theme === 'dark' ? '#bbb' : '#333'"
+                            style="display: block; height: 4px; margin: 4px 0; border-radius: 2px;"></span>
+                        <span [style.background]="theme === 'dark' ? '#bbb' : '#333'"
+                            style="display: block; height: 4px; margin: 4px 0; border-radius: 2px;"></span>
+                        <span [style.background]="theme === 'dark' ? '#bbb' : '#333'"
+                            style="display: block; height: 4px; margin: 4px 0; border-radius: 2px;"></span>
+                    </ng-container>
+                    <ng-container *ngIf="showPatterns">
+                        <span [style.color]="theme === 'dark' ? '#bbb' : '#333'"
+                            style="display: flex; align-items: center; justify-content: center; height: 24px; width: 24px;">
+                            <span style="font-size: 1.5em; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">&times;</span>
+                        </span>
+                    </ng-container>
+                </span>
+            </button>
+            <div *ngIf="showPatterns">
+                <!-- Theme selection -->
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 0.85em; font-weight: normal;">
+                        Theme:
+                        <select [(ngModel)]="theme" (change)="onThemeChange($event)" style="margin-left: 8px;">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 6px;">
+                    <label style="font-size: 0.85em; font-weight: normal;">
+                        <input type="checkbox" [checked]="selectedPatterns.length === patternKeys.length"
+                            (change)="onSelectAllChange($event)" />
+                        Select All
+                    </label>
+                    <ng-container *ngFor="let key of patternKeys">
+                        <label style="font-size: 0.85em; font-weight: normal; display: flex; align-items: center; gap: 4px;">
+                            <input type="checkbox" [value]="key" [checked]="selectedPatterns.includes(key)"
+                                (change)="onPatternCheckboxChange(key, $event)" />
+                            <span [innerHTML]="numberGenerator.getPatternIcon(key)"></span>
+                            <span>{{ key }}</span>
+                        </label>
+                    </ng-container>
+                </div>
+                <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px;">
+                    <label style="font-size: 0.85em; font-weight: normal;">
+                        <input type="checkbox" [(ngModel)]="autoGenerate" (change)="onAutoGenerateChange()" />
+                        Auto-generate next card
+                    </label>
+                    <label style="font-size: 0.85em; font-weight: normal;">
+                        Interval (ms):
+                        <input type="number" [(ngModel)]="autoGenerateInterval" min="500" step="100"
+                            style="width: 70px;" (change)="onAutoGenerateChange()" />
+                    </label>
+                </div>
+
+                <!-- Moved liked/disliked numbers collapsible section here -->
+                <div style="margin: 16px auto; width: 100%; text-align: center;">
+                    <button (click)="showLikedDisliked = !showLikedDisliked"
+                        style="margin-bottom: 8px; font-size: 1em; border: none; background: #eee; padding: 6px 16px; border-radius: 6px; cursor: pointer;">
+                        {{ showLikedDisliked ? '▼' : '►' }} Liked & Disliked Numbers
+                    </button>
+                    <div *ngIf="showLikedDisliked">
+                        <table style="width: 100%; text-align: center;">
+                            <thead>
+                                <tr>
+                                    <th>Disliked Numbers</th>
+                                    <th>Liked Numbers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <ng-container *ngFor="let num of getDislikedNumbers()">
+                                            <span>
+                                                {{ num }}
+                                                <button (click)="deleteDislikedNumber(num)"
+                                                    style="color:red; border:none; background:none; cursor:pointer; font-size:1em;">×</button>
+                                                <button (click)="switchDislikedToLiked(num)"
+                                                    style="color:green; border:none; background:none; cursor:pointer; font-size:1em;">&#8594;</button>
+                                            </span><br />
+                                        </ng-container>
+                                    </td>
+                                    <td>
+                                        <ng-container *ngFor="let num of getLikedNumbers()">
+                                            <span>
+                                                {{ num }}
+                                                <button (click)="deleteLikedNumber(num)"
+                                                    style="color:red; border:none; background:none; cursor:pointer; font-size:1em;">×</button>
+                                                <button (click)="switchLikedToDisliked(num)"
+                                                    style="color:orange; border:none; background:none; cursor:pointer; font-size:1em;">&#8592;</button>
+                                            </span><br />
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- End moved section -->
+
+                <!-- Seen Numbers collapsible section -->
+                <div style="margin: 16px auto; width: 100%; text-align: center;">
+                    <button (click)="showSeenNumbers = !showSeenNumbers"
+                        style="margin-bottom: 8px; font-size: 1em; border: none; background: #eee; padding: 6px 16px; border-radius: 6px; cursor: pointer;">
+                        {{ showSeenNumbers ? '▼' : '►' }} Seen Numbers
+                    </button>
+                    <div *ngIf="showSeenNumbers">
+                        <div style="max-height: 200px; overflow-y: auto; text-align: left; margin: 0 auto; width: 80%;">
+                            <ng-container *ngFor="let num of seenNumbers">
+                                <span>{{ num }}</span><br />
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Seen Numbers section -->
+            </div>
+        </div>
+    </div>
+    <div class="card-container" (swipeleft)="prevCard()" (swiperight)="nextCard()" (click)="nextCard()"
+        (mousedown)="onDragStart($event)" (mousemove)="onDragMove($event)" (mouseup)="onDragEnd($event)"
+        (mouseleave)="onDragEnd($event)"
+    style="display: flex; justify-content: center; align-items: center; height: calc(100vh - 64px); width: 100%;">
+        <ng-container *ngIf="cards.length">
+            <app-card [number]="cards[current]" *ngIf="showCard && cards[current] !== undefined" @fadeCard
+                (animationComplete)="onCardAnimationComplete()"></app-card>
+        </ng-container>
+    </div>
+    <!-- Like/Dislike buttons and pattern icon at the very bottom of the page -->
+    <div [ngStyle]="{
+        'background': theme === 'dark' ? '#222' : '#fff',
+        'color': theme === 'dark' ? '#eee' : '#222',
+        'display': 'flex',
+        'justify-content': 'center',
+        'align-items': 'center',
+        'gap': '24px',
+        'position': 'fixed',
+        'left': '0',
+        'bottom': '0',
+        'width': '100%',
+        'z-index': '10',
+        'padding': '12px 0',
+        'box-shadow': '0 -2px 8px rgba(0,0,0,0.05)'
+    }">
+        <button (click)="dislikeCard()" title="Dislike"
+            style="background:none; border:none; padding:0; cursor:pointer; font-size:2em;">
+            <i class="bi bi-hand-thumbs-down" style="display:inline-block; transform: scaleX(-1);"
+                [style.color]="theme === 'dark' ? '#bbb' : '#333'"></i>
+        </button>
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <span [innerHTML]="numberGenerator.getPatternIcon()" [title]="numberGenerator.mode" style="cursor: pointer;"></span>
+        </div>
+        <button (click)="likeCard()" title="Like"
+            style="background:none; border:none; padding:0; cursor:pointer; font-size:2em;">
+            <i class="bi bi-hand-thumbs-up" [style.color]="theme === 'dark' ? '#bbb' : '#333'"></i>
+        </button>
+    </div>
+    <!-- Navigation buttons inside burger menu -->
+    <div style="display: none; gap: 8px; justify-content: center; margin-top: 12px;">
+        <button (click)="prevCard()" [disabled]="current === 0">&#8592; Prev</button>
+        <button (click)="nextCard()">Next &#8594;</button>
+    </div>
+
+</div>
