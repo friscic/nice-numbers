@@ -22,3 +22,4 @@ export { CenteredHexagonalNumberGenerator } from './centered-hexagonal-number-ge
 export { NumberPatternGenerator } from './number-pattern-generators-base';
 
 export { AlternatingDigitsGenerator, RandomWalkGenerator, DigitSumConstraintGenerator, MultiplicativePatternGenerator, BlockPatternGenerator, SparsePatternGenerator } from './novel-pattern-generators';
+export { RandomTimeGenerator } from './random-time-generator';

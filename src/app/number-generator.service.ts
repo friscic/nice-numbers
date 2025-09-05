@@ -21,11 +21,13 @@ import {
   HappyNumberGenerator,
   HarshadNumberGenerator,
   PalindromeNumberGenerator,
-  CenteredHexagonalNumberGenerator
+  CenteredHexagonalNumberGenerator,
+  RandomTimeGenerator
 } from './generators';
 export type NumberPattern =
   | 'randomDecimal'
   | 'randomInteger'
+  | 'randomTime'
   | 'arithmetic'
   | 'geometric'
   | 'fibonacci'
@@ -50,6 +52,7 @@ export const NUMBER_PATTERN_NAMES: Record<NumberPattern, string> = {
 //   random: '🎲',
   randomDecimal: '⏬',
   randomInteger: '🔢',
+  randomTime: '⏰',
   arithmetic: '➕',
   geometric: '📈',
   fibonacci: '🌱',
@@ -75,6 +78,7 @@ export const NUMBER_PATTERN_LABELS: Record<NumberPattern, string> = {
 //   random: 'Random Numbers',
   randomDecimal: 'Random Decimal',
   randomInteger: 'Random Integer',
+  randomTime: 'Random Time',
   arithmetic: 'Arithmetic Sequence',
   geometric: 'Geometric Sequence',
   fibonacci: 'Fibonacci Numbers',
@@ -96,13 +100,13 @@ export const NUMBER_PATTERN_LABELS: Record<NumberPattern, string> = {
   centeredHexagonal: 'Centered Hexagonal Numbers',
 };
 
-
 @Injectable({ providedIn: 'root' })
 export class NumberGeneratorService {
   mode: NumberPattern = 'randomDecimal';
   private generators: Record<NumberPattern, NumberPatternGenerator> = {
     randomDecimal: new RandomDecimalGenerator(),
     randomInteger: new RandomIntegerGenerator(),
+    randomTime: new RandomTimeGenerator(),
     arithmetic: new ArithmeticNumberGenerator(),
     geometric: new GeometricNumberGenerator(),
     fibonacci: new FibonacciNumberGenerator(),
